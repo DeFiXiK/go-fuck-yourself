@@ -13,20 +13,20 @@ var ProcessName string
 
 func main() {
 	if len(os.Args) < 2 || len(os.Args) > 3 {
-		fmt.Println(Usage)
-		os.Exit(1)
+		Fatal(Usage)
 	}
 	ProcessName = os.Args[len(os.Args)-1]
 	if ProcessName == "you" {
-		fmt.Println(Usage)
-		os.Exit(1)
+		Fatal(Usage)
 	}
 	pid, err := FindProcess(ProcessName)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		Fatal(err)
 	}
-	fmt.Printf("ID процесса: %v\n", pid)
+	err = KillerProcess(pid)
+	if err != nil {
+		Fatal(err)
+	}
 }
 
 func FindProcess(pattern string) (pid int, err error) {
@@ -41,4 +41,18 @@ func FindProcess(pattern string) (pid int, err error) {
 		}
 	}
 	return 0, fmt.Errorf("Process not found")
+}
+
+func KillerProcess(pid int) (err error) {
+	osproc, err := os.FindProcess(pid)
+	if err != nil {
+		return err
+	}
+	osproc.Kill()
+	return nil
+}
+
+func Fatal(err interface{}) {
+	fmt.Println(err)
+	os.Exit(1)
 }
