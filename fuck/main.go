@@ -84,7 +84,7 @@ func FindProcess(pattern string) (pid int, err error) {
 		if p.Pid() == os.Getpid() {
 			continue
 		}
-		if p.Executable() != pattern {
+		if !strings.Contains(p.Executable(), pattern) {
 			continue
 		}
 		return p.Pid(), nil
