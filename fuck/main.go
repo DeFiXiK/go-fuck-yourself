@@ -3,13 +3,17 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/mitchellh/go-ps"
 )
 
 const Usage = "Usage: fuck [you] <process-name>"
-const Chars = " -_.abcdefghijklmnopqrstuvwxyz1234567890"
-const Flipped = " -_'ɐqɔpǝɟɓɥıɾʞlɯuodbɹsʇnʌʍxʎz⇂zƐㄣϛ9ㄥ860"
+
+var (
+	Chars   = []rune(" -_.abcdefghijklmnopqrstuvwxyz1234567890")
+	Flipped = []rune(" -_'ɐqɔpǝɟɓɥıɾʞlɯuodbɹsʇnʌʍxʎz⇂zƐㄣϛ9ㄥ860")
+)
 
 var ProcessName string
 
@@ -64,7 +68,7 @@ func Fatal(err interface{}) {
 func RageFace(args ...interface{}) {
 	fmt.Println()
 	fmt.Print("  (╯°□°）╯︵")
-	fmt.Println(args...)
+	fmt.Println(Flip(fmt.Sprint(args...)))
 	fmt.Println()
 }
 func ShokFace(args ...interface{}) {
@@ -75,6 +79,35 @@ func ShokFace(args ...interface{}) {
 	fmt.Println()
 }
 
-func Flip(str string) {
+func IndexRune(s []rune, rn rune) int {
+	for i, v := range s {
+		if v == rn {
+			return i
+		}
+	}
+	return -1
+}
 
+func ReverseRunes(r []rune) {
+	for i := 0; i < len(r)/2; i++ {
+		j := len(r) - i - 1
+		r[i], r[j] = r[j], r[i]
+	}
+}
+
+func Flip(str string) string {
+	str = strings.ToLower(str)
+
+	buf := make([]rune, 0, len(str))
+	for _, srcRune := range str {
+		srcIndex := IndexRune(Chars, srcRune)
+		if srcIndex < 0 {
+			continue
+		}
+		dstRune := Flipped[srcIndex]
+		buf = append(buf, dstRune)
+	}
+	ReverseRunes(buf)
+
+	return string(buf)
 }
