@@ -8,6 +8,8 @@ import (
 )
 
 const Usage = "Usage: fuck [you] <process-name>"
+const Chars = " -_.abcdefghijklmnopqrstuvwxyz1234567890"
+const Flipped = " -_'ɐqɔpǝɟɓɥıɾʞlɯuodbɹsʇnʌʍxʎz⇂zƐㄣϛ9ㄥ860"
 
 var ProcessName string
 
@@ -27,6 +29,7 @@ func main() {
 	if err != nil {
 		Fatal(err)
 	}
+	RageFace(ProcessName)
 }
 
 func FindProcess(pattern string) (pid int, err error) {
@@ -55,4 +58,15 @@ func KillerProcess(pid int) (err error) {
 func Fatal(err interface{}) {
 	fmt.Println(err)
 	os.Exit(1)
+}
+
+func RageFace(args ...interface{}) {
+	fmt.Println()
+	fmt.Print("  (╯°□°）╯︵")
+	fmt.Println(args...)
+	fmt.Println()
+}
+
+func Flip(str string) {
+
 }
