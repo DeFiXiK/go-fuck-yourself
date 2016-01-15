@@ -30,6 +30,7 @@ func main() {
 		Fatal(err)
 	}
 	RageFace(ProcessName)
+	ShokFace()
 }
 
 func FindProcess(pattern string) (pid int, err error) {
@@ -64,6 +65,13 @@ func RageFace(args ...interface{}) {
 	fmt.Println()
 	fmt.Print("  (╯°□°）╯︵")
 	fmt.Println(args...)
+	fmt.Println()
+}
+func ShokFace(args ...interface{}) {
+	fmt.Println()
+	fmt.Print("  (；￣Д￣) . o O( ")
+	fmt.Print(args...)
+	fmt.Println(" )")
 	fmt.Println()
 }
 
