@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mitchellh/go-ps"
+	"github.com/yamnikov-oleg/go-ps"
 )
 
 func RageFace(args ...interface{}) {
