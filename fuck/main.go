@@ -74,10 +74,12 @@ func ParseArgs() (pname string, ok bool) {
 	return pname, true
 }
 
-func FindProcess(pattern string) (pid int, err error) {
+// TODO: FindProcess возвращала указатель на структуру
+
+func FindProcess(pattern string) (ps.Process, error) {
 	processes, err := ps.Processes()
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	for _, p := range processes {
@@ -87,25 +89,26 @@ func FindProcess(pattern string) (pid int, err error) {
 		if !strings.Contains(p.Executable(), pattern) {
 			continue
 		}
-		return p.Pid(), nil
+		return p, nil
 	}
 
-	return 0, fmt.Errorf("Process not found")
+	return nil, fmt.Errorf("Process not found")
 }
 
-func FindAndKill(pname string) error {
-	pid, err := FindProcess(pname)
+// TODO Возвращать имя процесса, и шибку
+func FindAndKill(pname string) (string, error) {
+	proc, err := FindProcess(pname)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	osproc, err := os.FindProcess(pid)
+	osproc, err := os.FindProcess(proc.Pid())
 	if err != nil {
-		return err
+		return "", err
 	}
 	osproc.Kill()
 
-	return nil
+	return proc.Executable(), nil
 }
 
 func main() {
@@ -115,10 +118,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err := FindAndKill(pname); err != nil {
+	exec, err := FindAndKill(pname)
+	if err != nil {
 		ShockFace()
 		os.Exit(1)
 	}
 
-	RageFace(pname)
+	RageFace(exec)
 }
