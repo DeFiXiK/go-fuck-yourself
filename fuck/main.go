@@ -74,8 +74,6 @@ func ParseArgs() (pname string, ok bool) {
 	return pname, true
 }
 
-// TODO: FindProcess возвращала указатель на структуру
-
 func FindProcess(pattern string) (ps.Process, error) {
 	processes, err := ps.Processes()
 	if err != nil {
@@ -95,7 +93,6 @@ func FindProcess(pattern string) (ps.Process, error) {
 	return nil, fmt.Errorf("Process not found")
 }
 
-// TODO Возвращать имя процесса, и шибку
 func FindAndKill(pname string) (string, error) {
 	proc, err := FindProcess(pname)
 	if err != nil {
@@ -111,10 +108,17 @@ func FindAndKill(pname string) (string, error) {
 	return proc.Executable(), nil
 }
 
+const MinNameLen = 4
+
 func main() {
 	pname, ok := ParseArgs()
 	if !ok {
 		fmt.Println("Usage: fuck [you] <process-name>")
+		os.Exit(1)
+	}
+
+	if len(pname) < MinNameLen {
+		fmt.Printf("<process-name> can't be shorter than %v symbols\n", MinNameLen)
 		os.Exit(1)
 	}
 
