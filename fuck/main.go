@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -8,18 +9,15 @@ import (
 	"github.com/yamnikov-oleg/go-ps"
 )
 
-func RageFace(args ...interface{}) {
+func RageFace(s string) {
 	fmt.Println()
-	fmt.Print("  (╯°□°）╯︵")
-	fmt.Println(Flip(fmt.Sprint(args...)))
+	fmt.Println("  (╯°□°）╯︵", Flip(s))
 	fmt.Println()
 }
 
-func ShockFace(args ...interface{}) {
+func ShockFace(s string) {
 	fmt.Println()
-	fmt.Print("  (；￣Д￣) . o O( ")
-	fmt.Print("It didn't work out as expected...")
-	fmt.Println(" )")
+	fmt.Println("  (；￣Д￣) . o O( ", s, " )")
 	fmt.Println()
 }
 
@@ -74,7 +72,9 @@ func ParseArgs() (pname string, ok bool) {
 	return pname, true
 }
 
-func FindProcess(pattern string) (ps.Process, error) {
+var MultipleProcessesError = errors.New("found multiple processes")
+
+func FindProcess(pattern string) (proc ps.Process, err error) {
 	processes, err := ps.Processes()
 	if err != nil {
 		return nil, err
@@ -87,10 +87,17 @@ func FindProcess(pattern string) (ps.Process, error) {
 		if !strings.Contains(p.Executable(), pattern) {
 			continue
 		}
-		return p, nil
+		if proc != nil {
+			return nil, MultipleProcessesError
+		}
+		proc = p
 	}
 
-	return nil, fmt.Errorf("Process not found")
+	if proc == nil {
+		err = fmt.Errorf("Process not found")
+	}
+
+	return
 }
 
 func FindAndKill(pname string) (string, error) {
@@ -123,8 +130,12 @@ func main() {
 	}
 
 	exec, err := FindAndKill(pname)
+	if err == MultipleProcessesError {
+		ShockFace("Not sure which one you mean to abuse...")
+		os.Exit(1)
+	}
 	if err != nil {
-		ShockFace()
+		ShockFace("It didn't work out as expected...")
 		os.Exit(1)
 	}
 
